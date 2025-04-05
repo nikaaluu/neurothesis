@@ -21,8 +21,8 @@ df.columns = df.columns.str.strip()
 # === Step 2: Rename columns for easier access ===
 df = df.rename(columns={
     'Sample Name': 'Sample',
-    'Cq_T': 'Cq_T',
-    'Cq_S': 'Cq_S'
+    'Cq_Telomere': 'Cq_T',
+    'Cq_SCG': 'Cq_S'
 })
 
 # === Step 3: Define PCR efficiencies ===
