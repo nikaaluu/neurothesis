@@ -20,9 +20,9 @@ df.columns = df.columns.str.strip()
 
 # === Step 2: Rename columns for easier access ===
 df = df.rename(columns={
-    'Name': 'Sample',
-    'Cq^T': 'Cq_T',
-    'Cq^SCG': 'Cq_S'
+    'Sample Name': 'Sample',
+    'Cq_T': 'Cq_T',
+    'Cq_S': 'Cq_S'
 })
 
 # === Step 3: Define PCR efficiencies ===
