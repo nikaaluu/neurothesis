@@ -19,6 +19,7 @@ df = pd.read_csv(file_path, delimiter=best_delim)
 df.columns = df.columns.str.strip()
 
 # === Step 2: Rename columns for easier access ===
+# Can be changed according to what the user had it previously named in the .csv file
 df = df.rename(columns={
     'Sample Name': 'Sample',
     'Cq_Telomere': 'Cq_T',
