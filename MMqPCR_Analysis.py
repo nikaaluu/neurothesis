@@ -18,13 +18,16 @@ best_delim = max(delimiter_counts, key=delimiter_counts.get)
 df = pd.read_csv(file_path, delimiter=best_delim)
 df.columns = df.columns.str.strip()
 
-# === Step 2: Rename columns ===
-# Can be changed according to what the user had it previously named in the .csv file
-df = df.rename(columns={
-    'Sample Name': 'Sample',
-    'Cq_Telomere': 'Cq_T',
-    'Cq_SCG': 'Cq_S'
-})
+# === Step 2: Rename columns based on their position ===
+# Assume the file always has at least 4 columns:
+# Column 0 remains unchanged,
+# Column 1 -> "Sample", Column 2 -> "Cq_T", Column 3 -> "Cq_S"
+new_names = list(df.columns)
+if len(new_names) >= 4:
+    new_names[1] = "Sample"
+    new_names[2] = "Cq_T"
+    new_names[3] = "Cq_S"
+df.columns = new_names
 
 # === Step 3: Define PCR efficiencies (from the standard curves, so it can be modified) ===
 E_T = 0.986  # Telomere primer efficiency
