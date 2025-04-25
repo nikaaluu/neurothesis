@@ -30,8 +30,8 @@ if len(new_names) >= 4:
 df.columns = new_names
 
 # === Step 3: Define PCR efficiencies (from the standard curves, so it can be modified) ===
-E_T = 0.986  # Telomere primer efficiency
-E_S = 1.023  # SCG primer efficiency
+E_T = 1.059  # Telomere primer efficiency
+E_S = 0.992  # SCG primer efficiency
 
 # === Step 4: Efficiency-adjusted T/S calculation (formula) ===
 df['T_S'] = ((E_S ** df['Cq_S']) / (E_T ** df['Cq_T'])) ** -1
