@@ -125,21 +125,21 @@ plt.tight_layout()
 barplot_fig = plt.gcf()
 
 # Plot 4: Grouped barplot by Passage
-# Step 1: Extract Passage info
+# Extract Passage info
 summary_df['Passage'] = summary_df['Sample'].str.extract(r'(P\d+)')
 
-# Step 2: Find unique passages and samples
+# Find unique passages and samples
 passages = sorted(summary_df['Passage'].dropna().unique(), key=lambda x: int(x[1:]))  # Sort by number
 samples = summary_df['Sample'].unique()
 
-# Step 3: Build data for plotting
+# Build data for plotting
 bar_width = 0.1  # Slightly smaller bars if many samples
 x = np.arange(len(passages))  # Base x-ticks for passages
 offsets = np.linspace(-bar_width * len(samples) / 2, bar_width * len(samples) / 2, len(samples))
 
 colors = plt.cm.tab20(np.linspace(0, 1, len(samples)))
 
-# Step 4: Start plotting
+# Start plotting
 plt.figure(figsize=(14, 6))
 
 for i, sample in enumerate(samples):
@@ -167,21 +167,20 @@ plt.tight_layout()
 
 grouped_barplot_fig = plt.gcf()
 
-# === Plot 5a: Total Telomere Length per diploid cell (averaged over replicates) ===
-
-# Step 1: Calculate total and average telomere lengths directly from T_S_mean and T_S_std
+# Plot 5: Total TL per diploid cell
+# Calculate TL directly from T_S_mean and T_S_std (average per replicate)
 summary_df['Total_mean'] = 1.23 * summary_df['T_S_mean'] * 1000
 summary_df['Total_error'] = 0.09 * summary_df['T_S_mean'] * 1000
-summary_df['Average_mean'] = summary_df['Total_mean'] / 92
-summary_df['Average_error'] = summary_df['Total_error'] / 92
 
-# Step 2: Prepare plotting
+# Prepare plotting
+bar_width = 0.1
 x = np.arange(len(summary_df))
+offsets = np.linspace(-bar_width * len(summary_df) / 2, bar_width * len(summary_df) / 2, len(summary_df))
 
-# === Total Telomere Length Plot ===
+# Total TL Plot 
 plt.figure(figsize=(12, 6))
 plt.bar(x, summary_df['Total_mean'], yerr=summary_df['Total_error'], capsize=5,
-        color='skyblue', edgecolor='black', width=0.4)
+        color='skyblue', edgecolor='black')
 plt.xticks(x, summary_df['Sample'], rotation=45)
 plt.ylabel('Total TL (kb)')
 plt.title('Total Telomere Length per Diploid Cell')
@@ -189,10 +188,19 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 total_telomere_fig = plt.gcf()
 
-# === Plot 5b: Average Telomere Length per Chromosome End ===
+# Plot 6: Average TL per Chromosomal End 
+# Calculate TL (average per replicate)
+summary_df['Average_mean'] = summary_df['Total_mean'] / 92
+summary_df['Average_error'] = summary_df['Total_error'] / 92
+
+# Prepare plotting
+bar_width = 0.1
+x = np.arange(len(summary_df))
+offsets = np.linspace(-bar_width * len(summary_df) / 2, bar_width * len(summary_df) / 2, len(summary_df))
+
 plt.figure(figsize=(12, 6))
 plt.bar(x, summary_df['Average_mean'], yerr=summary_df['Average_error'], capsize=5,
-        color='lightgreen', edgecolor='black', width=0.4)
+        color='lightgreen', edgecolor='black')
 plt.xticks(x, summary_df['Sample'], rotation=45)
 plt.ylabel('Average TL (kb)')
 plt.title('Average Telomere Length per Chromosomal End')
