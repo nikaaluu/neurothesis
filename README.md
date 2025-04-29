@@ -7,8 +7,8 @@ By automating various steps and standardizing the analytical process, these scri
 It primarily involves MMqPCR analysis to assess the telomere length based on the Cq values. Two scripts were made based from two differnt protocols: Cawthon (2009) and Martin et al. (2024). The one that was finally used was the one based on Cawthon (2009). Additionally, there is a separate script that plotted the efficiency curves of the primers used. 
 
 The project covers:
-- Quantitative PCR analysis of telomere length (MMqPCR)
-- Image analysis of ICC staining
+- Monochrome Multiplex Quantitative PCR (MMqPCR) analysis of telomere length (TL)
+- Image analysis of Immunocytochemistry (ICC) stainings
 - Data cleaning, visualization, and statistical analysis
 
 ## Data 
