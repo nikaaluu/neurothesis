@@ -17,7 +17,7 @@ Raw data is not included in this repository due to file size and privacy restric
 ### a. MMqPCR
 For the MMqPCR analysis, the data needs to be presented in a CSV file and follow the following format: 
 
-| Column Name     | Description                                    |
+| Column Name     | Description (What to put)                      |
 |:----------------|:-----------------------------------------------|
 | Sample Name     | Name of the biological sample (e.g., A13 P9)   |
 | Cq_Telomere     | Cq value for the telomere amplification        |
