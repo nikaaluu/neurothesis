@@ -22,7 +22,7 @@ For the MMqPCR analysis, the data needs to be presented in a CSV file and follow
 | Sample Name     | Name of the biological sample (e.g., A13 P9)   |
 | Cq_Telomere     | Cq value for the telomere amplification        |
 | Cq_SCG          | Cq value for the single-copy gene amplification|
-| Well (optional) | qPCR plate well position (e.g., C08)           |
+| Well (optional) | Plate well position (e.g., C08)           |
 
 Additionally, the first row was where the reference was put. This was  labeled "Reference" in the "Sample Name" column for 2^(-ΔΔCt) calculations.
 
