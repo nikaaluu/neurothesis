@@ -11,15 +11,10 @@ The project covers:
 - Image analysis of ICC staining
 - Data cleaning, visualization, and statistical analysis
 
-## Requirements
-The Scripts were written in Python 3.12.5 on VSCode 
-- Python 3.12.5
-- Install required libraries with 'pip install -r requirements.txt'
-
 ## Data 
 Raw data is not included in this repository due to file size and privacy restrictions. A small test file is available, and the data can be requested if needed. 
 
-### MMqPCR
+### a. MMqPCR
 For the MMqPCR analysis, the data needs to be presented in a CSV file and follow the following format: 
 
 | Column Name     | Description                                    |
@@ -33,6 +28,10 @@ Additionally, the first row was where the reference was put. This was  labeled "
 
 The well number is ignored by the script but I kept it to keep track. 
 
-# ICC 
+### b. ICC 
 The files analysed where .nd2/.tiff files
 
+## Requirements
+The Scripts were written in Python 3.12.5 on VSCode 
+- Python 3.12.5
+- Install required libraries with 'pip install -r requirements.txt'
