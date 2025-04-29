@@ -1,3 +1,10 @@
+# ======================================================
+# Author: Nika Lu Yang
+# Date: April 2025
+# Bachelor Thesis Research (BTR): "Unraveling the Impact of Aging on Parkinson’s Disease-derived Neuroepithelial Stem Cells"
+# Maastricht Science Programme (MSP)
+# ======================================================
+
 import pandas as pd
 import numpy as np
 import os
