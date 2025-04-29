@@ -35,3 +35,11 @@ The files analysed where .nd2/.tiff files
 The Scripts were written in Python 3.12.5 on VSCode 
 - Python 3.12.5
 - Install required libraries with 'pip install -r requirements.txt'
+
+## Usage
+This code was developed as part of my BTR and is shared for academic purposes only.  
+
+Please contact me if you would like to reuse or adapt any part of it! :D
+
+## Acknowledgments
+I would like to thank Dr. Silvia Bolognin and Dr. Virginia Cora for their aid and guidance throughout the project, and Cenk Erdoğan for assistance with coding and technical support
