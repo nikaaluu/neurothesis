@@ -1,10 +1,10 @@
-# neurothesis
-markdown
-# Thesis Repository: Analysis of Telomere Dynamics
+ # neurothesis, a Thesis Repository
+This repository gathers the scripts used to conduct data analysis for my Bachelor Thesis Research (BTR) titled **"Unraveling the impact of aging on Parkinson’s Disease-derived Neuroepithelial Stem Cells"** in the Maastricht Science Programme (MSP).
 
-This repository contains all the Python scripts and analysis tools used for my Master's Thesis titled **"Analysis of Telomere Dynamics in Human Stem Cells."**
+By automating various steps and standardizing the analytical process, these scripts ensure that the analysis is reproducible and can be uniformly applied to all samples.
 
 ## Project Overview
+It primarily involves MMqPCR analysis to assess the telomere length based on the Cq values. Two scripts were made based from two differnt protocols: Cawthon (2009) and Martin et al. (2024). The one that was finally used was the one based on Cawthon (2009). Additionally, there is a separate script that plotted the efficiency curves of the primers used. 
 
 The project covers:
 - Quantitative PCR analysis of telomere length (MMqPCR)
@@ -12,20 +12,14 @@ The project covers:
 - Data cleaning, visualization, and statistical analysis
 
 ## Requirements
+The Scripts were written in Python 3.12.5 on VSCode 
 - Python 3.12.5
-- Install required libraries: pip install -r requirements.txt
+- Install required libraries with 'pip install -r requirements.txt'
 
+## Data 
+Raw data is not included in this repository due to file size and privacy restrictions. A small test file is available, and the data can be requested if needed. 
 
-1. What is this?
-This repository gathers the scripts I employed to conduct data analysis for my Bachelor Thesis Research (BTR) titled "Unraveling the impact of aging on Parkinson’s Disease-derived Neuroepithelial Stem Cells" in the Maastricht Science Programme (MSP). By automating various steps and standardizing the analytical process, these scripts ensure that the analysis is reproducible and can be uniformly applied to all samples.
-
-2. Topics 
-It primarily involves MMqPCR analysis to assess the telomere length based on the Cq values. Two scripts were made based from two differnt protocols: Cawthon (2009) and Martin et al. (2024). The one that was finally used was the one based on Cawthon (2009). Additionally, there is a separate script that plotted the efficiency curves of the primers used. 
-
-3. How to run the scripts
-The Scripts were written in Python 3.12.5. And the required libraries can be installed using 'pip install -r requirements.txt'. 
-
-4. Data
+### MMqPCR
 For the MMqPCR analysis, the data needs to be presented in a CSV file and follow the following format: 
 
 | Column Name     | Description                                    |
@@ -39,8 +33,6 @@ Additionally, the first row was where the reference was put. This was  labeled "
 
 The well number is ignored by the script but I kept it to keep track. 
 
-5. Where is the data?
-Raw data is not included in this repository due to file size and privacy restrictions. A small test file is available, and the data can be requested if needed. 
-
-
+# ICC 
+The files analysed where .nd2/.tiff files
 
