@@ -1,4 +1,4 @@
- # neurothesis, a Thesis Repository
+# neurothesis
 This repository gathers the scripts used to conduct data analysis for my Bachelor Thesis Research (BTR) titled **"Unraveling the impact of aging on Parkinson’s Disease-derived Neuroepithelial Stem Cells"** in the Maastricht Science Programme (MSP).
 
 By automating various steps and standardizing the analytical process, these scripts ensure that the analysis is reproducible and can be uniformly applied to all samples.
