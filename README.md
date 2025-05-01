@@ -29,7 +29,7 @@ Additionally, the first row was where the reference was put. This was  labeled "
 The well number is ignored by the script but I kept it to keep track. 
 
 ### b. ICC 
-The files analysed where .nd2/.tiff files
+The files analysed where .nd2/.tiff files for further analysis. 
 
 ## Requirements
 The Scripts were written in Python 3.12.5 on VSCode 
@@ -42,4 +42,4 @@ This code was developed as part of my BTR and is shared for academic purposes on
 Please contact me if you would like to reuse or adapt any part of it! :D
 
 ## Acknowledgments
-I would like to thank Dr. Silvia Bolognin and Dr. Virginia Cora for their aid and guidance throughout the project, and Cenk Erdoğan for assistance with coding and technical support. 
+I would like to thank Dr. Silvia Bolognin and Dr. Virginia Cora for their aid and guidance throughout the project, and Cenk Erdoğan for his assistance with coding and technical support. 
