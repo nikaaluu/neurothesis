@@ -109,7 +109,7 @@ for region in regionprops(labels, intensity_image=norm):  # Pass norm as intensi
         regions.append(region)
 """
 For each labeled region, the properties of area, eccentricity and intensity are extracted. 
-There are some filtering criteria that retain regions with an area between 5–100 pixels (region.area) and also regions with eccentricity < 0.9 (region.eccentricity)
+There are some filtering criteria that retain regions with an area between 5-100 pixels (region.area) and also regions with eccentricity < 0.9 (region.eccentricity)
 """
 
 # === Step 9: Debugging: Visualize all detected regions ===
