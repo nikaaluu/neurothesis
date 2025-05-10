@@ -23,8 +23,8 @@ import seaborn as sns
 import matplotlib.gridspec as gridspec
 
 # === Step 1: Define input and output directories ===
-input_csv = "summary_per_well.csv"
-analysis_output_root = "53BP1_Stats_Results"
+input_csv = "/Users/nikalu/Downloads/summary_per_well.csv"
+analysis_output_root = "/Users/nikalu/Downloads/53BP1_Stats_Results"
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 script_name = os.path.splitext(os.path.basename(__file__))[0]
 run_folder = os.path.join(analysis_output_root, f'Analysis_{timestamp}_{script_name}')
@@ -69,7 +69,7 @@ for passage in passage_order:
         flierprops=dict(marker='x', color='gray', markersize=6)
     )
     plt.xticks(np.arange(1, len(line_order) + 1), labels=line_order, rotation=45)
-    plt.title(f"{passage} – Foci per Cell (Boxplot)")
+    plt.title(f"{passage} - Foci per Cell (Boxplot)")
     plt.xlabel("Line")
     plt.ylabel("Foci per Cell")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
@@ -81,7 +81,7 @@ for passage in passage_order:
     plt.figure(figsize=(8, 6))
     plt.violinplot(data_per_line, showmeans=True, showmedians=True)
     plt.xticks(np.arange(1, len(line_order) + 1), labels=line_order)
-    plt.title(f"{passage} – Foci per Cell (Violin)")
+    plt.title(f"{passage} - Foci per Cell (Violin)")
     plt.xlabel("Line")
     plt.ylabel("Foci per Cell")
     plt.tight_layout()
@@ -184,6 +184,33 @@ pd.DataFrame(anova_line)\
 model = ols("Foci_per_Cell ~ C(Passage) * C(Line)", data=all_df).fit()
 anova2 = anova_lm(model)
 anova2.to_csv(os.path.join(run_folder, "Two_Way_ANOVA.csv"))
+
+# Perform Tukey's post-hoc test for the two-way ANOVA
+interaction_groups = all_df.groupby(['Passage', 'Line'])['Foci_per_Cell'].mean().reset_index()
+interaction_groups['Group'] = interaction_groups['Passage'] + " - " + interaction_groups['Line']
+
+tukey = pairwise_tukeyhsd(
+    endog=all_df['Foci_per_Cell'],
+    groups=all_df['Passage'] + " - " + all_df['Line'],
+    alpha=0.05
+)
+
+# Save Tukey results to a CSV file
+tukey_results = []
+for row in tukey.summary().data[1:]:
+    tukey_results.append({
+        'Comparison': f"{row[0]} vs {row[1]}",
+        'p-value': row[5],
+        'Significant': 'Yes' if row[6] else 'No'
+    })
+
+pd.DataFrame(tukey_results).to_csv(os.path.join(run_folder, "Tukey_Two_Way_ANOVA.csv"), index=False)
+
+# Reorganize data to start from specific passages
+desired_passages = ['P5', 'P6', 'P7', 'P19', 'P20', 'P21']
+all_df = all_df[all_df['Passage'].isin(desired_passages)]
+all_df['Passage'] = pd.Categorical(all_df['Passage'], categories=desired_passages, ordered=True)
+all_df = all_df.sort_values(by=['Passage', 'Line'])
 
 # 4) Mixed Linear Model
 mlm = smf.mixedlm("Foci_per_Cell ~ Passage", all_df, groups=all_df["Line"]).fit()
