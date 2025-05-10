@@ -93,7 +93,7 @@ for passage in passage_order:
     for ln in line_order:
         plt.hist(sub[sub['Line'] == ln]['Foci_per_Cell'], bins=20,
                  alpha=0.5, label=ln, edgecolor='black')
-    plt.title(f"{passage} – Foci per Cell (Histogram)")
+    plt.title(f"{passage} Foci per Cell (Histogram)")
     plt.xlabel("Foci per Cell")
     plt.ylabel("Frequency")
     plt.legend()
