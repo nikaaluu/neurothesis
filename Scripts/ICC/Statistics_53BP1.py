@@ -186,9 +186,6 @@ anova2 = anova_lm(model)
 anova2.to_csv(os.path.join(run_folder, "Two_Way_ANOVA.csv"))
 
 # Perform Tukey's post-hoc test for the two-way ANOVA
-interaction_groups = all_df.groupby(['Passage', 'Line'])['Foci_per_Cell'].mean().reset_index()
-interaction_groups['Group'] = interaction_groups['Passage'] + " - " + interaction_groups['Line']
-
 tukey = pairwise_tukeyhsd(
     endog=all_df['Foci_per_Cell'],
     groups=all_df['Passage'] + " - " + all_df['Line'],
@@ -198,10 +195,11 @@ tukey = pairwise_tukeyhsd(
 # Save Tukey results to a CSV file
 tukey_results = []
 for row in tukey.summary().data[1:]:
+    p_value = max(0, min(row[5], 1))  # Ensure p-value is between 0 and 1
     tukey_results.append({
         'Comparison': f"{row[0]} vs {row[1]}",
-        'p-value': row[5],
-        'Significant': 'Yes' if row[6] else 'No'
+        'p-value': p_value,
+        'Significant': 'Yes' if p_value < 0.05 else 'No'
     })
 
 pd.DataFrame(tukey_results).to_csv(os.path.join(run_folder, "Tukey_Two_Way_ANOVA.csv"), index=False)
