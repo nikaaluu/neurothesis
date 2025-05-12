@@ -196,38 +196,35 @@ pivoted = grouped_age_cell.pivot(index='Cell_Line', columns='Age_Group', values=
 pivoted_std = grouped_age_cell.pivot(index='Cell_Line', columns='Age_Group', values='std')
 x = np.arange(len(pivoted))
 bar_width = 0.3
-plt.figure(figsize=(6, 4))
-# Plot bars
-bars1 = plt.bar(x - bar_width/2, pivoted['Young'], label='Young', color='skyblue', edgecolor='black', width=bar_width)
-bars2 = plt.bar(x + bar_width/2, pivoted['Old'], label='Old', color='salmon', edgecolor='black', width=bar_width)
+fig, ax = plt.subplots(figsize=(8, 6))
 
-# Add error bars with caps and horizontal lines (whiskers)
-plt.errorbar(
-    x - bar_width/2,
-    pivoted['Young'],
-    yerr=pivoted_std['Young'],
-    fmt='none',
-    ecolor='black',
-    capsize=5,
-    elinewidth=1,
-    capthick=1
+# Bars
+ax.bar(x - bar_width/2, pivoted['Young'], label='Young', color='skyblue',
+       edgecolor='black', width=bar_width)
+ax.bar(x + bar_width/2, pivoted['Old'], label='Old', color='salmon',
+       edgecolor='black', width=bar_width)
+
+# Error bars
+ax.errorbar(
+    x - bar_width/2, pivoted['Young'], yerr=pivoted_std['Young'],
+    fmt='none', ecolor='black', capsize=5, elinewidth=1, capthick=1
 )
-plt.errorbar(
-    x + bar_width/2,
-    pivoted['Old'],
-    yerr=pivoted_std['Old'],
-    fmt='none',
-    ecolor='black',
-    capsize=5,
-    elinewidth=1,
-    capthick=1
+ax.errorbar(
+    x + bar_width/2, pivoted['Old'], yerr=pivoted_std['Old'],
+    fmt='none', ecolor='black', capsize=5, elinewidth=1, capthick=1
 )
 
-plt.ylabel('T/S Ratio')
-plt.title('Telomere Length')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+# X-axis labels
+ax.set_xticks(x)
+ax.set_xticklabels(pivoted.index, rotation=45, ha='right', fontsize=9)
+
+# Axis labels and title
+ax.set_ylabel('T/S Ratio')
+ax.set_title('Telomere Length')
+ax.legend(loc='upper right', frameon=True)
+
 plt.tight_layout()
-plt.savefig(results_folder / "barplot_young_vs_old_side_by_side.png")
+plt.savefig(results_folder / "barplot_young_vs_old_side_by_side_fixed.png")
 plt.close()
 
 # === T-tests and ANOVA ===
