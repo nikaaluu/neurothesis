@@ -11,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
-from scipy.stats import f_oneway, levene, kruskal
+from scipy.stats import f_oneway, levene, kruskal, shapiro
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import statsmodels.formula.api as smf
 from statsmodels.formula.api import ols
@@ -21,6 +21,7 @@ from pingouin import welch_anova, pairwise_gameshowell
 from scikit_posthocs import posthoc_dunn
 import seaborn as sns
 import matplotlib.gridspec as gridspec
+import scikit_posthocs as sp
 
 # === Step 1: Define input and output directories ===
 input_csv = "/Users/nikalu/Downloads/summary_per_well.csv"
@@ -204,6 +205,23 @@ for row in tukey.summary().data[1:]:
 
 pd.DataFrame(tukey_results).to_csv(os.path.join(run_folder, "Tukey_Two_Way_ANOVA.csv"), index=False)
 
+# Create a combined grouping variable for Passage and Line
+all_df['Passage_Line'] = all_df['Passage'] + " - " + all_df['Line']
+
+# Perform Games-Howell post-hoc test for the two-way ANOVA
+gameshowell_results_anova = pairwise_gameshowell(
+    data=all_df,
+    dv='Foci_per_Cell',  # Dependent variable
+    between='Passage_Line'  # Combined grouping variable
+)
+
+# Save Games-Howell results to a CSV file
+gameshowell_results_anova.to_csv(
+    os.path.join(run_folder, "Games_Howell_Two_Way_ANOVA.csv"), index=False
+)
+
+print("Games-Howell post-hoc test for two-way ANOVA complete. Results saved.")
+
 # Reorganize data to start from specific passages
 desired_passages = ['P5', 'P6', 'P7', 'P19', 'P20', 'P21']
 all_df = all_df[all_df['Passage'].isin(desired_passages)]
@@ -242,5 +260,233 @@ ax.invert_yaxis()  # flip so lowest passage appears at bottom
 plt.tight_layout()
 plt.savefig(os.path.join(run_folder, "Heatmap.png"), bbox_inches='tight')
 plt.close()
+
+print(all_df.groupby(['Passage', 'Line'])['Foci_per_Cell'].var())
+
+# Collect Levene's and Shapiro-Wilk test results
+normality_homogeneity_results = []
+
+for passage in passage_order:
+    grp = all_df[all_df['Passage'] == passage]
+    
+    # Shapiro-Wilk test for normality
+    shapiro_pval = shapiro(grp['Foci_per_Cell'])[1]
+    
+    # Levene's test for homogeneity of variances
+    levene_pval = levene(*[grp[grp['Line'] == ln]['Foci_per_Cell'] for ln in line_order if ln in grp['Line'].unique()])[1]
+    
+    # Append results
+    normality_homogeneity_results.append({
+        'Passage': passage,
+        'Shapiro-p-value': shapiro_pval,
+        'Levene-p-value': levene_pval
+    })
+
+# Save the results to a CSV file
+pd.DataFrame(normality_homogeneity_results).to_csv(
+    os.path.join(run_folder, "Normality_Homogeneity_Tests.csv"), index=False
+)
+
+# Perform Shapiro-Wilk and Levene's tests for cell lines
+normality_homogeneity_results_lines = []
+
+for line in line_order:
+    grp = all_df[all_df['Line'] == line]
+    
+    # Shapiro-Wilk test for normality
+    shapiro_pval = shapiro(grp['Foci_per_Cell'])[1] if len(grp) > 3 else np.nan  # Shapiro requires at least 3 samples
+    
+    # Levene's test for homogeneity of variances across passages
+    data = [grp[grp['Passage'] == p]['Foci_per_Cell'] for p in passage_order if p in grp['Passage'].unique()]
+    levene_pval = levene(*data)[1] if len(data) > 1 else np.nan  # Levene requires at least 2 groups
+    
+    # Append results
+    normality_homogeneity_results_lines.append({
+        'Line': line,
+        'Shapiro-p-value': shapiro_pval,
+        'Levene-p-value': levene_pval
+    })
+
+# Save the results to a CSV file
+pd.DataFrame(normality_homogeneity_results_lines).to_csv(
+    os.path.join(run_folder, "Normality_Homogeneity_Tests_Cell_Lines.csv"), index=False
+)
+
+print("Shapiro-Wilk and Levene's tests for cell lines complete. Results saved.")
+
+# Perform Kruskal-Wallis and Games-Howell tests for all passages and cell lines
+kruskal_results = []
+gameshowell_results = []
+
+for passage in passage_order:
+    grp = all_df[all_df['Passage'] == passage]
+    
+    # Prepare data for Kruskal-Wallis test
+    data = [grp[grp['Line'] == ln]['Foci_per_Cell'] for ln in line_order if ln in grp['Line'].unique()]
+    
+    # Kruskal-Wallis test
+    if len(data) > 1:  # Ensure there are at least two groups to compare
+        stat, pval = kruskal(*data)
+        kruskal_results.append({'Passage': passage, 'Kruskal-Wallis_stat': stat, 'p-value': pval})
+    
+    # Games-Howell post-hoc test
+    if len(grp['Line'].unique()) > 1:  # Ensure there are at least two groups to compare
+        posthoc = pairwise_gameshowell(data=grp, dv='Foci_per_Cell', between='Line')
+        posthoc['Passage'] = passage  # Add passage information to the results
+        gameshowell_results.append(posthoc)
+
+# Save Kruskal-Wallis results to a CSV file
+pd.DataFrame(kruskal_results).to_csv(
+    os.path.join(run_folder, "Kruskal_Wallis_Results.csv"), index=False
+)
+
+# Save Games-Howell results to a CSV file
+if gameshowell_results:
+    pd.concat(gameshowell_results).to_csv(
+        os.path.join(run_folder, "Games_Howell_Results.csv"), index=False
+    )
+
+print("Kruskal-Wallis and Games-Howell tests complete. Results saved.")
+
+# Perform Kruskal-Wallis test for differences amongst cell lines
+kruskal_line_results = []
+
+for line in line_order:
+    grp = all_df[all_df['Line'] == line]
+    
+    # Prepare data for Kruskal-Wallis test
+    data = [grp[grp['Passage'] == p]['Foci_per_Cell'] for p in passage_order if p in grp['Passage'].unique()]
+    
+    # Kruskal-Wallis test
+    if len(data) > 1:  # Ensure there are at least two groups to compare
+        stat, pval = kruskal(*data)
+        kruskal_line_results.append({'Line': line, 'Kruskal-Wallis_stat': stat, 'p-value': pval})
+
+# Save Kruskal-Wallis results for cell lines to a CSV file
+pd.DataFrame(kruskal_line_results).to_csv(
+    os.path.join(run_folder, "Kruskal_Wallis_Results_Cell_Lines.csv"), index=False
+)
+
+print("Kruskal-Wallis test for cell lines complete. Results saved.")
+
+# Perform Games-Howell and Dunn's post-hoc tests for Kruskal-Wallis results
+gameshowell_posthoc_results = []
+dunn_posthoc_results = []
+
+# Post-hoc for passages within each line
+for line in line_order:
+    grp = all_df[all_df['Line'] == line]
+    if len(grp['Passage'].unique()) > 1:  # Ensure there are at least two groups
+        # Games-Howell post-hoc test
+        gameshowell = pairwise_gameshowell(data=grp, dv='Foci_per_Cell', between='Passage')
+        gameshowell['Line'] = line
+        gameshowell_posthoc_results.append(gameshowell)
+
+        # Dunn's post-hoc test
+        dunn = sp.posthoc_dunn(grp, val_col='Foci_per_Cell', group_col='Passage', p_adjust='bonferroni')
+        dunn['Line'] = line
+        dunn_posthoc_results.append(dunn)
+
+# Post-hoc for lines within each passage
+for passage in passage_order:
+    grp = all_df[all_df['Passage'] == passage]
+    if len(grp['Line'].unique()) > 1:  # Ensure there are at least two groups
+        # Games-Howell post-hoc test
+        gameshowell = pairwise_gameshowell(data=grp, dv='Foci_per_Cell', between='Line')
+        gameshowell['Passage'] = passage
+        gameshowell_posthoc_results.append(gameshowell)
+
+        # Dunn's post-hoc test
+        dunn = sp.posthoc_dunn(grp, val_col='Foci_per_Cell', group_col='Line', p_adjust='bonferroni')
+        dunn['Passage'] = passage
+        dunn_posthoc_results.append(dunn)
+
+# Save Games-Howell results to a CSV file
+if gameshowell_posthoc_results:
+    pd.concat(gameshowell_posthoc_results).to_csv(
+        os.path.join(run_folder, "Games_Howell_Posthoc_Kruskal_Wallis.csv"), index=False
+    )
+
+# Save Dunn's test results to a CSV file
+if dunn_posthoc_results:
+    pd.concat(dunn_posthoc_results).to_csv(
+        os.path.join(run_folder, "Dunn_Posthoc_Kruskal_Wallis.csv"), index=False
+    )
+
+print("Games-Howell and Dunn's post-hoc tests for Kruskal-Wallis complete. Results saved.")
+
+# Perform Dunn's test for all passages across all lines
+dunn_passages = sp.posthoc_dunn(
+    all_df, val_col='Foci_per_Cell', group_col='Passage', p_adjust='bonferroni'
+)
+
+# Save the results to a CSV file
+dunn_passages.to_csv(os.path.join(run_folder, "Dunn_Posthoc_All_Passages.csv"))
+
+print("Dunn's test for all passages complete. Results saved.")
+
+# Perform Dunn's test for all lines across all passages
+dunn_lines = sp.posthoc_dunn(
+    all_df, val_col='Foci_per_Cell', group_col='Line', p_adjust='bonferroni'
+)
+
+# Save the results to a CSV file
+dunn_lines.to_csv(os.path.join(run_folder, "Dunn_Posthoc_All_Lines.csv"))
+
+print("Dunn's test for all lines complete. Results saved.")
+
+# Perform Dunn's test for all passages across all lines with Holm correction
+dunn_passages_holm = sp.posthoc_dunn(
+    all_df, val_col='Foci_per_Cell', group_col='Passage', p_adjust='holm'
+)
+
+# Save the results to a CSV file
+dunn_passages_holm.to_csv(
+    os.path.join(run_folder, "Dunn_Posthoc_All_Passages_Holm.csv")
+)
+
+print("Dunn's test for all passages with Holm correction complete. Results saved.")
+
+# Perform Dunn's test for all lines across all passages with Holm correction
+dunn_lines_holm = sp.posthoc_dunn(
+    all_df, val_col='Foci_per_Cell', group_col='Line', p_adjust='holm'
+)
+
+# Save the results to a CSV file
+dunn_lines_holm.to_csv(
+    os.path.join(run_folder, "Dunn_Posthoc_All_Lines_Holm.csv")
+)
+
+print("Dunn's test for all lines with Holm correction complete. Results saved.")
+
+# === Step 7: QQ Plots and Residual Plots ===
+
+# Generate QQ plots and residual plots for the two-way ANOVA model
+residuals = model.resid  # Residuals from the two-way ANOVA model
+fitted_values = model.fittedvalues  # Fitted values from the model
+
+# QQ Plot
+plt.figure(figsize=(8, 6))
+sm.qqplot(residuals, line='45', fit=True, ax=plt.gca())
+plt.title("QQ Plot of Residuals")
+plt.xlabel("Theoretical Quantiles")
+plt.ylabel("Sample Quantiles")
+plt.tight_layout()
+plt.savefig(os.path.join(run_folder, "QQ_Plot_Residuals.png"))
+plt.close()
+
+# Residual Plot
+plt.figure(figsize=(8, 6))
+plt.scatter(fitted_values, residuals, alpha=0.7, edgecolor='k')
+plt.axhline(0, color='red', linestyle='--', linewidth=1.5)
+plt.title("Residuals vs Fitted Values")
+plt.xlabel("Fitted Values")
+plt.ylabel("Residuals")
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig(os.path.join(run_folder, "Residuals_vs_Fitted.png"))
+plt.close()
+
+print("QQ plot and residual plot complete. Results saved.")
 
 print(f"All analysis complete. Results in: {run_folder}")
