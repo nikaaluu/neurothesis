@@ -13,7 +13,7 @@ from scipy.stats import norm
 import datetime
 
 # === Step 1: Load Cq data file ===
-file_path = "/Users/nikalu/Downloads/MMqPCR Analysis 03042025.csv"
+file_path = "/Users/nikalu/Downloads/MMqPCR_Real.csv"
 
 # Auto-detect delimiter
 with open(file_path, 'r', encoding='utf-8') as f:
@@ -41,12 +41,21 @@ E_T = 1.059  # Telomere primer efficiency
 E_S = 0.992  # SCG primer efficiency
 
 # === Step 4: Efficiency-adjusted T/S calculation (formula) ===
-df['T_S'] = ((E_S ** df['Cq_S']) / (E_T ** df['Cq_T'])) ** -1
+df['T_S'] = ((E_T ** df['Cq_T']) / (E_S ** df['Cq_S'])) ** -1
 
 # === Step 5: Normalize 'Reference' sample ===
+# Strip replicate IDs and whitespace from the 'Sample' column
+df['Sample'] = df['Sample'].str.replace(r'[_\-]\d+$', '', regex=True).str.strip()
+
+# Debugging: Print unique Sample values
+print("Unique Sample values after stripping replicate IDs and whitespace:", df['Sample'].unique())
+
+# Check if 'Reference' exists in the Sample column
 if 'Reference' not in df['Sample'].values:
-    raise ValueError("No sample labeled exactly 'Reference' was found.")
-ref_ts = df.loc[df['Sample'] == 'Reference', 'T_S'].values[0]
+    raise ValueError("No sample labeled exactly 'Reference' was found. Check the input file and replicate ID formatting.")
+
+# Calculate the mean T/S for Reference replicates
+ref_ts = df.loc[df['Sample'] == 'Reference', 'T_S'].mean()
 df['T_S_normalized'] = df['T_S'] / ref_ts
 
 # === Step 6: Strip replicate IDs from non-reference samples (e.g., Sample_1 → Sample) ===
