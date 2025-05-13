@@ -4,7 +4,7 @@ This repository gathers the scripts used to conduct data analysis for my Bachelo
 By automating various steps and standardizing the analytical process, these scripts ensure that the analysis is reproducible and can be uniformly applied to all samples.
 
 ## Project Overview
-It primarily involves MMqPCR analysis to assess the telomere length based on the Cq values. Two scripts were made based from two differnt protocols: Cawthon (2009) and Martin et al. (2024). The one that was finally used was the one based on Cawthon (2009). Additionally, there is a separate script that plotted the efficiency curves of the primers used. 
+It primarily involves MMqPCR analysis to assess the telomere length based on the Cq values. Two scripts were made based on the protocol proposed by Martin et al. (2024). Additionally, there is a separate script that plotted the efficiency curves of the primers used. 
 
 The project covers:
 - Monochrome Multiplex Quantitative PCR (MMqPCR) analysis of telomere length (TL)
