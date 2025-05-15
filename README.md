@@ -24,7 +24,7 @@ For the MMqPCR analysis, the data needs to be presented in a CSV file and follow
 | Cq_SCG          | Cq value for the single-copy gene amplification|
 | Well (optional) | Plate well position (e.g., C08)                |
 
-Additionally, the first row was where the reference was put. This was  labeled "Reference" in the "Sample Name" column for 2^(-ΔΔCt) calculations.
+Additionally, the first row was where the reference was put. This was  labeled "Reference" in the "Sample Name" column for calculations.
 
 The well number is ignored by the script but I kept it to keep track. 
 
