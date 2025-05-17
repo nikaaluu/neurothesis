@@ -12,7 +12,7 @@ The project covers:
 - Data cleaning, visualization, and statistical analysis
 
 ## Data 
-Raw data is not included in this repository due to file size and privacy restrictions. A small test file is available, and the data can be requested if needed. 
+Raw data is not included in this repository due to file size and privacy restrictions. However, the data can be requested if needed. 
 
 ### a. MMqPCR
 For the MMqPCR analysis, the data needs to be presented in a CSV file and follow the following format: 
